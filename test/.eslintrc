@@ -1,0 +1,22 @@
+{
+  "extends": "../.eslintrc",
+  "env": {
+    "mocha": true
+  },
+  "globals" : {
+    "assert": false,
+    "expect": false,
+    "should": false,
+    "sinon": false
+  },
+  "plugins": [
+    "should-promised"
+  ],
+  "rules": {
+    "arrow-body-style": 0,
+    "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
+    "no-unused-expressions": 0,
+    "promise/always-return": 0,
+    "should-promised/return-promise": 2
+  }
+}

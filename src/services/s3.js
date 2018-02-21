@@ -1,19 +1,15 @@
 const AWS = require('aws-sdk');
 
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({ apiVersion: '2006-03-01', region: 'eu-central-1' });
 
 const service = {
   resourceTypes: {
     bucket: {
-      list: async ({ Name }) => new Promise((resolve, reject) => {
-        s3.listBuckets((err, data) => {
-          if (err) return reject(err);
-          if (!data) return reject();
-          const { Buckets } = data;
-          const filtered = Name ? Buckets.filter(b => b.Name === Name) : Buckets;
-          return resolve(filtered);
-        });
-      }),
+      list: async ({ Name } = {}) => {
+        const data = await s3.listBuckets().promise();
+        const { Buckets } = data;
+        return Name ? Buckets.filter(b => b.Name === Name) : Buckets;
+      },
       details: {
         // inventoryConfigurations: async bucket =>
         //   listBucketInventoryConfigurations({ Bucket: bucket.Name }).InventoryConfigurations,

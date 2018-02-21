@@ -17,8 +17,8 @@ class CloudTest {
   }
 
   selectFilter({ resourceType, one }) { // eslint-disable-line class-methods-use-this
-    return async (filter) => {
-      const list = await resourceType.list(filter);
+    return async (options) => {
+      const list = await resourceType.list(options);
       if (!list) {
         return Promise.reject(new Error('no data'));
       }

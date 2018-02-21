@@ -35,7 +35,7 @@ class CloudTest {
     };
   }
 
-  dump(data) { // eslint-disable-line class-methods-use-this
+  dataDump(data) { // eslint-disable-line class-methods-use-this
     console.log(util.inspect(data, { depth: null })); // eslint-disable-line no-console
   }
 }

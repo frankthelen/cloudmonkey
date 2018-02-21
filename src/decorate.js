@@ -1,6 +1,13 @@
-const dataInterface = ({ owner, data }) => ({
-  data,
-  dump: () => owner.dump(data),
+const dataInterface = ({ owner }) => ({
+  get: (target, prop) => {
+    if (prop === 'dump') {
+      // TODO: check if conflicting with existing property
+      return () => {
+        owner.dataDump(target);
+      };
+    }
+    return target[prop];
+  },
 });
 
-module.exports = ({ owner, data }) => dataInterface({ owner, data });
+module.exports = ({ owner, data }) => new Proxy(data, dataInterface({ owner }));

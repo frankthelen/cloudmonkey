@@ -8,13 +8,16 @@ class CloudTest {
     this.select = select({ owner: this, services });
   }
 
-  info() {
-    Object.entries(this.services).forEach(([name, service]) => {
+  help() { /* eslint-disable no-console */
+    Object.entries(this.services).forEach(([serName, service]) => {
       const { resourceTypes } = service;
-      const resourceTypeNames = Object.keys(resourceTypes);
-      console.log(name, ' -> ', resourceTypeNames); // eslint-disable-line no-console
+      console.log(serName);
+      Object.entries(resourceTypes).forEach(([resName, resourceType]) => {
+        const filters = resourceType.filters || [];
+        console.log(`- ${resName}, ${!filters.length ? 'no ' : ''}filters ${filters}`);
+      });
     });
-  }
+  } /* eslint-enable no-console */
 
   selectFilter({ resourceType, one }) { // eslint-disable-line class-methods-use-this
     return async (filters = {}) => {

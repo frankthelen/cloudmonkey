@@ -3,9 +3,14 @@ const decorate = require('./decorate');
 const util = require('util');
 
 class CloudTest {
-  constructor(services = {}) {
-    this.services = services;
-    this.select = select({ owner: this, services });
+  constructor() {
+    this.services = {};
+    this.select = select({ owner: this, services: this.services });
+  }
+
+  register(service) {
+    const { name } = service;
+    this.services[name] = service;
   }
 
   help() { /* eslint-disable no-console */

@@ -13,7 +13,7 @@ class S3 extends Service {
       list: async ({ name } = {}) => {
         const data = await this.aws.listBuckets().promise();
         const { Buckets } = data;
-        return name ? Buckets.filter(bucket => bucket.Name === name) : Buckets;
+        return name ? Buckets.filter(item => item.Name === name) : Buckets;
       },
     });
   }

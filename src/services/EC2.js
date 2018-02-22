@@ -9,46 +9,57 @@ class EC2 extends Service {
     this.aws = new AWS.EC2({ apiVersion: '2016-11-15', region });
     this.register({
       name: 'instance',
-      list: async () => {
+      filters: ['id'],
+      list: async ({ id }) => {
         const params = {
           MaxResults: 1000, // TODO: paging
         };
         const data = await this.aws.describeInstances(params).promise();
-        return data.Reservations.reduce((acc, res) => [...acc, ...res.Instances], []);
+        return data.Reservations.reduce((acc, res) => [...acc, ...res.Instances], [])
+          .filter(item => !id || item.InstanceId === id);
       },
     });
     this.register({
       name: 'internetGateway',
-      list: async () => {
+      filters: ['id'],
+      list: async ({ id }) => {
         const params = {};
         const data = await this.aws.describeInternetGateways(params).promise();
-        return data.InternetGateways;
+        return data.InternetGateways
+          .filter(item => !id || item.InternetGatewayId === id);
       },
     });
     this.register({
       name: 'routeTable',
-      list: async () => {
+      filters: ['id'],
+      list: async ({ id }) => {
         const params = {};
         const data = await this.aws.describeRouteTables(params).promise();
-        return data.RouteTables;
+        return data.RouteTables
+          .filter(item => !id || item.RouteTableId === id);
       },
     });
     this.register({
       name: 'securityGroup',
-      list: async () => {
+      filters: ['id', 'name'],
+      list: async ({ id, name }) => {
         const params = {
           MaxResults: 1000, // TODO: paging
         };
         const data = await this.aws.describeSecurityGroups(params).promise();
-        return data.SecurityGroups;
+        return data.SecurityGroups
+          .filter(item => !id || item.GroupId === id)
+          .filter(item => !name || item.GroupName === name);
       },
     });
     this.register({
       name: 'subnet',
-      list: async () => {
+      filters: ['id'],
+      list: async ({ id }) => {
         const params = {};
         const data = await this.aws.describeSubnets(params).promise();
-        return data.Subnets;
+        return data.Subnets
+          .filter(item => !id || item.SubnetId === id);
       },
     });
   }

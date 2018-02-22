@@ -20,7 +20,7 @@ class Service {
     console.log(`# ${this.name}`);
     Object.entries(this.resourceTypes).forEach(([name, resourceType]) => {
       const { filters } = resourceType;
-      console.log(`- ${name} / ${!filters.length ? 'no ' : ''}filters ${filters}`);
+      console.log(`- ${name} / ${filters.length ? 'filter by ' : ''}${filters}`);
     });
   } /* eslint-enable no-console */
 }

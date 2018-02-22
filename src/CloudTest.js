@@ -13,16 +13,9 @@ class CloudTest {
     this.services[name] = service;
   }
 
-  help() { /* eslint-disable no-console */
-    Object.entries(this.services).forEach(([serName, service]) => {
-      const { resourceTypes } = service;
-      console.log(serName);
-      Object.entries(resourceTypes).forEach(([resName, resourceType]) => {
-        const filters = resourceType.filters || [];
-        console.log(`- ${resName}, ${!filters.length ? 'no ' : ''}filters ${filters}`);
-      });
-    });
-  } /* eslint-enable no-console */
+  help() {
+    Object.values(this.services).forEach(service => service.help());
+  }
 
   selectFilter({ resourceType, one }) { // eslint-disable-line class-methods-use-this
     return async (filters = {}) => {
@@ -33,16 +26,16 @@ class CloudTest {
       }
       const list = await resourceType.list(filters);
       if (!list) {
-        return Promise.reject(new Error('no data'));
+        return Promise.reject(new Error('no resource found'));
       }
       if (one) {
         if (list.length === 0) {
-          return Promise.reject(new Error('no data'));
+          return Promise.reject(new Error('no resource found'));
         }
         if (list.length === 1) {
           return Promise.resolve(decorate({ data: list[0], owner: this }));
         }
-        return Promise.reject(new Error('one resource expected but multiple received'));
+        return Promise.reject(new Error('one resource expected but multiple found'));
       }
       return Promise.resolve(list.map(data => decorate({ data, owner: this })));
     };

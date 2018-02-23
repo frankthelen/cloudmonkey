@@ -4,8 +4,8 @@ const Service = require('../Service');
 
 class EC2 extends Service {
   constructor({ region, alias } = {}) {
-    assert(region, '"region" is required');
     super({ name: 'ec2', alias });
+    assert(region, '"region" is required');
     this.aws = new AWS.EC2({ apiVersion: '2016-11-15', region });
     this.register({
       name: 'instance',

@@ -1,7 +1,7 @@
 // build 'select' interface for all services and resourceTypes,
 // e.g., select.all.s3.buckets();
-//       select.some.s3.buckets({ Name: 'my-bucket' });
-//       select.one.s3.bucket({ Name: 'my-bucket' });
+//       select.some.s3.buckets({ name: 'my-bucket' });
+//       select.one.s3.bucket({ name: 'my-bucket' });
 
 const resourceTypeInterface = ({ owner, service, all, some, one }) => ({
   get: (target, prop) => {

@@ -1,6 +1,7 @@
+const assert = require('assert');
+const util = require('util');
 const select = require('./select');
 const decorate = require('./decorate');
-const util = require('util');
 
 class CloudTest {
   constructor() {
@@ -10,6 +11,8 @@ class CloudTest {
 
   register(service) {
     const { name } = service;
+    assert(name, '"name" is required');
+    assert(!this.services[name], '"name" is not unique, please use "alias"');
     this.services[name] = service;
   }
 
@@ -26,11 +29,11 @@ class CloudTest {
       }
       const list = await resourceType.list(filters);
       if (!list) {
-        return Promise.reject(new Error('no resource found'));
+        return Promise.reject(new Error('no resources found'));
       }
       if (one) {
         if (list.length === 0) {
-          return Promise.reject(new Error('no resource found'));
+          return Promise.reject(new Error('no resources found'));
         }
         if (list.length === 1) {
           return Promise.resolve(decorate({ data: list[0], owner: this }));

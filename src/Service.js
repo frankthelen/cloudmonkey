@@ -3,13 +3,14 @@ const assert = require('assert');
 class Service {
   constructor({ name, alias }) {
     this.name = alias || name;
-    assert(this.name, 'service requires "name" or "alias"');
+    assert(this.name, '"name" or "alias" is required');
     this.resourceTypes = {};
   }
 
   register({ name, filters = [], list }) {
-    assert(name, 'resource type requires a "name"');
-    assert(list, 'resource type requires a "list" function');
+    assert(name, '"name" is required');
+    assert(list, '"list" is required');
+    assert(typeof list === 'function', '"list" must be an async function');
     this.resourceTypes[name] = {
       filters,
       list,

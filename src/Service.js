@@ -17,13 +17,19 @@ class Service {
     };
   }
 
-  help() { /* eslint-disable no-console */
-    console.log(`# ${this.name}`);
+  help() {
+    const out = console.log; // eslint-disable-line no-console
+    out(`# service "${this.name}"`);
     Object.entries(this.resourceTypes).forEach(([name, resourceType]) => {
       const { filters } = resourceType;
-      console.log(`- ${name} / ${filters.length ? 'filter by ' : ''}${filters}`);
+      out(`  - resource type "${name}"`);
+      if (filters.length) {
+        const filtersStr = filters
+          .reduce((acc, filter, i) => `${acc}${i ? ', ' : ''}"${filter}"`, '');
+        out(`    filter by ${filtersStr}`);
+      }
     });
-  } /* eslint-enable no-console */
+  }
 }
 
 module.exports = Service;

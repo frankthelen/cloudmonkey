@@ -45,7 +45,8 @@ class CloudTest {
   }
 
   dataDump(data) { // eslint-disable-line class-methods-use-this
-    console.log(util.inspect(data, { depth: null })); // eslint-disable-line no-console
+    const out = console.log; // eslint-disable-line no-console
+    out(util.inspect(data, { depth: null }));
   }
 }
 

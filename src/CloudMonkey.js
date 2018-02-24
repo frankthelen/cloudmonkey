@@ -4,6 +4,7 @@ const select = require('./select');
 const decorate = require('./decorate');
 const S3 = require('./services/S3');
 const EC2 = require('./services/EC2');
+const Service = require('./Service');
 const { version } = require('../package.json');
 
 class CloudMonkey {
@@ -16,6 +17,7 @@ class CloudMonkey {
   }
 
   register(service) {
+    assert(service instanceof Service, 'service must be an instance of Service');
     const { name } = service;
     assert(name, '"name" is required');
     assert(!this.services[name], '"name" is not unique, please use "alias"');

@@ -21,4 +21,8 @@ describe('S3', () => {
     const s3 = new S3({ region: 'eu-central-1' });
     assert(s3);
   });
+
+  it('should throw error if "region" is missing', () => {
+    expect(() => { new S3(); }).to.throw(Error); // eslint-disable-line no-new
+  });
 });

@@ -21,4 +21,8 @@ describe('EC2', () => {
     const s3 = new EC2({ region: 'eu-central-1' });
     assert(s3);
   });
+
+  it('should throw error if "region" is missing', () => {
+    expect(() => { new EC2(); }).to.throw(Error); // eslint-disable-line no-new
+  });
 });

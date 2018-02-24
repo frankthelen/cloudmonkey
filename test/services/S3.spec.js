@@ -2,13 +2,13 @@ require('../test-helper');
 const assert = require('assert');
 const AWS = require('@mapbox/mock-aws-sdk-js');
 const { CloudMonkey, S3 } = require('../..');
-const mockS3ListBuckets = require('../mocks/buckets');
+const mockListBuckets = require('../mocks/buckets');
 
 describe('S3', () => {
   before(() => {
     AWS.stub('S3', 'listBuckets').returns({
       promise: () => {
-        return Promise.resolve(mockS3ListBuckets);
+        return Promise.resolve(mockListBuckets);
       },
     });
   });
@@ -51,6 +51,11 @@ describe('S3', () => {
         .should.be.rejected;
     });
 
+    it('`one.s3.bucket` should fail if nothing found', async () => {
+      await monkey.select.one.s3.bucket({ name: 'bla' })
+        .should.be.rejected;
+    });
+
     it('`some.s3.buckets` should return a filtered array', async () => {
       const data = await monkey.select.some.s3.buckets({ name: 'test-badges' })
         .should.be.fulfilled;
@@ -60,6 +65,21 @@ describe('S3', () => {
     it('`some.s3.buckets` should fail if unknown filter', async () => {
       await monkey.select.some.s3.buckets({ bla: 'bla' })
         .should.be.rejected;
+    });
+
+    it('`bla.s3.buckets` should throw because unknown syntax', async () => {
+      expect(() => { monkey.select.bla.s3.buckets(); })
+        .to.throw(Error);
+    });
+
+    it('`one.bla.bucket` should throw because unknown service', async () => {
+      expect(() => { monkey.select.one.bla.bucket(); })
+        .to.throw(Error);
+    });
+
+    it('`all.s3.blas` should throw because unknown resource type', async () => {
+      expect(() => { monkey.select.all.s3.blas(); })
+        .to.throw(Error);
     });
   });
 
@@ -76,9 +96,15 @@ describe('S3', () => {
       expect(data.cloudMonkey).has.property('dump');
     });
 
-    it('should decorate / shortcut', async () => {
+    it('should decorate / provide shortcuts', async () => {
       const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
       expect(data.dump).to.be.a('function');
+    });
+
+    it('should decorate but fail if conflicting with own property', async () => {
+      const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
+      data.dump = () => {};
+      expect(() => { data.dump(); }).to.throw(Error);
     });
   });
 });

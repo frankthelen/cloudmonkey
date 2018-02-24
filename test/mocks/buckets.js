@@ -4,11 +4,11 @@ module.exports = {
     CreationDate: '2018-01-17T09:35:34.000Z'
   },
   {
-    Name: 'test-dev-auditlogs',
+    Name: 'test-auditlogs',
     CreationDate: '2018-01-16T10:55:35.000Z'
   },
   {
-    Name: 'test-dev-tfstate',
+    Name: 'test-tfstate',
     CreationDate: '2018-01-16T11:89:34.000Z'
   }],
   Owner: {

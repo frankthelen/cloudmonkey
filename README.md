@@ -28,7 +28,7 @@ cloudMonkey.register(new EC2({ region: 'eu-central-1' }));
 const test = async () => {
   try {
     const data = await cloudMonkey.select.one.ec2.internetGateway();
-    data.cloudMonkey.dump();
+    data.dump();
     // ...
   } catch (err) {
     console.error(err);

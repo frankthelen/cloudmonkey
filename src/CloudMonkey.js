@@ -9,7 +9,8 @@ const { version } = require('../package.json');
 class CloudMonkey {
   constructor() {
     this.name = 'CloudMonkey';
-    this.decorator = 'cloudmonkey';
+    this.version = version;
+    this.decorator = 'cloudMonkey';
     this.services = {};
     this.select = select({ owner: this, services: this.services });
   }
@@ -23,7 +24,7 @@ class CloudMonkey {
 
   help() {
     const out = console.log; // eslint-disable-line no-console
-    out(`${this.name} ${version}`);
+    out(`${this.name} ${this.version}`);
     out();
     Object.values(this.services).forEach(service => service.help());
   }

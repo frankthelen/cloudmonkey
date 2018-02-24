@@ -29,3 +29,5 @@ coverage
 terraform.tfstate.d
 terraform.tfstate
 errored.tfstate
+
+test/backup

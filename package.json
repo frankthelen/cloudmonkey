@@ -3,11 +3,31 @@
   "version": "1.0.0-alpha.0",
   "description": "A little infrastructure testing library for AWS / experimental in an early stage",
   "main": "src/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/frankthelen/cloudmonkey.git"
   },
+  "keywords": [
+    "cloud",
+    "test",
+    "aws"
+  ],
   "author": "Frank Thelen",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/frankthelen/cloudmonkey/issues"
+  },
+  "homepage": "https://github.com/frankthelen/cloudmonkey#readme",
+  "scripts": {
+    "lint": "eslint . --ignore-path ./.eslintignore",
+    "test": "NODE_ENV=test mocha --recursive test",
+    "cover": "NODE_ENV=test nyc --reporter=lcov --reporter=text-summary mocha --exit --recursive test",
+    "coveralls": "npm run cover && nyc report --reporter=lcovonly && cat ./coverage/lcov.info | coveralls",
+    "preversion": "npm run lint && npm test"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  },
   "dependencies": {
     "aws-sdk": "^2.196.0",
     "bluebird": "^3.5.1",

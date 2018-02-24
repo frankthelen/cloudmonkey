@@ -2,9 +2,14 @@ const assert = require('assert');
 const util = require('util');
 const select = require('./select');
 const decorate = require('./decorate');
+const S3 = require('./services/S3');
+const EC2 = require('./services/EC2');
+const { version } = require('../package.json');
 
-class CloudTest {
+class CloudMonkey {
   constructor() {
+    this.name = 'CloudMonkey';
+    this.decorator = 'cloudmonkey';
     this.services = {};
     this.select = select({ owner: this, services: this.services });
   }
@@ -17,10 +22,13 @@ class CloudTest {
   }
 
   help() {
+    const out = console.log; // eslint-disable-line no-console
+    out(`${this.name} ${version}`);
+    out();
     Object.values(this.services).forEach(service => service.help());
   }
 
-  selectFilter({ resourceType, one }) { // eslint-disable-line class-methods-use-this
+  selectFilter({ resourceType, one }) {
     return async (filters = {}) => {
       const supported = resourceType.filters || [];
       const unsupported = Object.keys(filters).filter(key => !supported.includes(key));
@@ -50,4 +58,4 @@ class CloudTest {
   }
 }
 
-module.exports = CloudTest;
+module.exports = { CloudMonkey, S3, EC2 };

@@ -19,16 +19,17 @@ class Service {
 
   help() {
     const out = console.log; // eslint-disable-line no-console
-    out(`# service "${this.name}"`);
+    out(`service "${this.name}"`);
     Object.entries(this.resourceTypes).forEach(([name, resourceType]) => {
       const { filters } = resourceType;
-      out(`  - resource type "${name}"`);
+      out(`- resource type "${name}"`);
       if (filters.length) {
         const filtersStr = filters
           .reduce((acc, filter, i) => `${acc}${i ? ', ' : ''}"${filter}"`, '');
-        out(`    filter by ${filtersStr}`);
+        out(`  filter by ${filtersStr}`);
       }
     });
+    out();
   }
 }
 

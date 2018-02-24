@@ -1,24 +1,26 @@
-const dataInterface = ({ owner }) => ({
+const dataInterface = ({ owner, target }) => ({
+  dump: () => {
+    owner.dataDump(target);
+  },
+  // add further decorations here
+});
+
+const decorator = ({ owner }) => ({
   get: (target, prop) => {
     if (prop === owner.decorator) {
-      return {
-        dump: () => {
-          owner.dataDump(target);
-        },
-      };
+      return dataInterface({ owner, target });
     }
-    if (prop === 'dump') {
-      if (Object.prototype.hasOwnProperty.call(target, 'dump')) {
+    const supported = ['dump']; // add further decorations here
+    if (supported.includes(prop)) {
+      if (Object.prototype.hasOwnProperty.call(target, prop)) {
         throw new Error(
           `object has own property "${prop}", use "${owner.decorator}.${prop}" instead`
         );
       }
-      return () => {
-        owner.dataDump(target);
-      };
+      return dataInterface({ owner, target })[prop];
     }
     return target[prop];
   },
 });
 
-module.exports = ({ owner, data }) => new Proxy(data, dataInterface({ owner }));
+module.exports = ({ owner, data }) => new Proxy(data, decorator({ owner }));

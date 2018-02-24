@@ -5,7 +5,7 @@ const { CloudMonkey, S3 } = require('../..');
 const mockS3ListBuckets = require('../mocks/buckets');
 
 describe('S3', () => {
-  before(async () => {
+  before(() => {
     AWS.stub('S3', 'listBuckets').returns({
       promise: () => {
         return Promise.resolve(mockS3ListBuckets);
@@ -26,7 +26,7 @@ describe('S3', () => {
     expect(() => { new S3(); }).to.throw(Error); // eslint-disable-line no-new
   });
 
-  describe('select', () => {
+  describe('select interface', () => {
     let monkey;
 
     before(() => {
@@ -60,6 +60,25 @@ describe('S3', () => {
     it('`some.s3.buckets` should fail if unknown filter', async () => {
       await monkey.select.some.s3.buckets({ bla: 'bla' })
         .should.be.rejected;
+    });
+  });
+
+  describe('data interface', () => {
+    let monkey;
+
+    before(async () => {
+      monkey = new CloudMonkey();
+      monkey.register(new S3({ region: 'eu-central-1' }));
+    });
+
+    it('should decorate', async () => {
+      const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
+      expect(data.cloudMonkey).has.property('dump');
+    });
+
+    it('should decorate / shortcut', async () => {
+      const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
+      expect(data.dump).to.be.a('function');
     });
   });
 });

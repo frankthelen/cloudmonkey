@@ -31,7 +31,7 @@ class CloudMonkey {
 
   selectFilter({ resourceType, one }) {
     return async (filters = {}) => {
-      const supported = resourceType.filters || [];
+      const supported = resourceType.filters;
       const unsupported = Object.keys(filters).filter(key => !supported.includes(key));
       if (unsupported.length) {
         return Promise.reject(new Error(`unsupported filters: ${unsupported}`));

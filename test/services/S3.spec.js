@@ -77,8 +77,8 @@ describe('S3', () => {
         .to.throw(Error);
     });
 
-    it('`all.s3.blas` should throw because unknown resource type', async () => {
-      expect(() => { monkey.select.all.s3.blas(); })
+    it('`all.s3.bla` should throw because unknown resource type', async () => {
+      expect(() => { monkey.select.all.s3.bla(); })
         .to.throw(Error);
     });
   });

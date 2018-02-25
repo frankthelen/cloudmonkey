@@ -24,11 +24,10 @@ class CloudMonkey {
     this.services[name] = service;
   }
 
-  help() {
-    const out = console.log; // eslint-disable-line no-console
-    out(`${this.name} ${this.version}`);
-    out();
-    Object.values(this.services).forEach(service => service.help());
+  help(outln = console.log) { // eslint-disable-line no-console
+    outln(`${this.name} ${this.version}`);
+    outln();
+    Object.values(this.services).forEach(service => service.help(outln));
   }
 
   selectFilter({ resourceType, one }) {
@@ -56,8 +55,8 @@ class CloudMonkey {
   }
 
   dataDump(data) { // eslint-disable-line class-methods-use-this
-    const out = console.log; // eslint-disable-line no-console
-    out(util.inspect(data, { depth: null }));
+    const outln = console.log; // eslint-disable-line no-console
+    outln(util.inspect(data, { depth: null }));
   }
 }
 

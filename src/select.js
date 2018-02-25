@@ -1,40 +1,42 @@
-// build 'select' interface for all services and resourceTypes,
-// e.g., select.all.s3.buckets();
-//       select.some.s3.buckets({ name: 'my-bucket' });
-//       select.one.s3.bucket({ name: 'my-bucket' });
+// Build 'select' interface for services and resourceTypes.
+// Examples:
+// * select.all.s3.buckets();
+// * select.some.s3.buckets({ name: 'my-bucket' });
+// * select.one.s3.bucket({ name: 'my-bucket' });
 
-const resourceTypeInterface = ({ owner, service, all, some, one }) => ({
-  get: (target, prop) => {
-    const plural = prop.match(/^(.+)s$/) ? prop.slice(0, -1) : prop;
-    const resourceType = service.resourceTypes[prop] || service.resourceTypes[plural];
+const resourceTypeInterface = ({ monkey, service, all, some, one }) => ({
+  get: (target, prop) => { // trap
+    const alt = prop.match(/^(.+)s$/) ? prop.slice(0, -1) : prop; // singular if plural
+    const resourceType = service.resourceTypes[prop] || service.resourceTypes[alt];
     if (!resourceType) {
-      throw new Error(`Invalid select syntax, unknown resource type: "${prop}"`);
+      throw new Error(`invalid select, unknown resource type: "${prop}"`);
     }
-    return owner.selectFilter({ service, resourceType, all, some, one });
+    return monkey.selectResource({ service, resourceType, all, some, one });
   },
 });
 
-const serviceInterface = ({ owner, services, all, some, one }) => ({
-  get: (target, prop) => {
-    const service = services[prop];
+const serviceInterface = ({ monkey, all, some, one }) => ({
+  get: (target, prop) => { // trap
+    const service = monkey.services[prop];
     if (!service) {
-      throw new Error(`Invalid select syntax, unknown service: "${prop}"`);
+      throw new Error(`invalid select, unknown service: "${prop}"`);
     }
-    return new Proxy({}, resourceTypeInterface({ owner, service, all, some, one }));
+    return new Proxy({}, resourceTypeInterface({ monkey, service, all, some, one }));
   },
 });
 
-const selectInterface = ({ owner, services }) => ({
-  get: (target, prop) => {
+const selectInterface = ({ monkey }) => ({
+  get: (target, prop) => { // trap
     if (prop === 'one') {
-      return new Proxy({}, serviceInterface({ owner, services, one: true }));
+      return new Proxy({}, serviceInterface({ monkey, one: true }));
     } else if (prop === 'all') {
-      return new Proxy({}, serviceInterface({ owner, services, all: true }));
+      return new Proxy({}, serviceInterface({ monkey, all: true }));
     } else if (prop === 'some') {
-      return new Proxy({}, serviceInterface({ owner, services, some: true }));
+      return new Proxy({}, serviceInterface({ monkey, some: true }));
     }
-    throw new Error(`Invalid select syntax: "${prop}"`);
+    throw new Error(`invalid select, unknown quantifier: "${prop}"`);
   },
 });
 
-module.exports = ({ owner, services }) => new Proxy({}, selectInterface({ owner, services }));
+module.exports = ({ monkey }) =>
+  new Proxy({}, selectInterface({ monkey }));

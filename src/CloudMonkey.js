@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const assert = require('assert');
 const util = require('util');
 const select = require('./select');
@@ -7,13 +8,15 @@ const EC2 = require('./services/EC2');
 const Service = require('./Service');
 const { version } = require('../package.json');
 
+/* eslint-disable class-methods-use-this */
+
 class CloudMonkey {
   constructor() {
     this.name = 'CloudMonkey';
     this.version = version;
     this.decorator = 'cloudMonkey';
     this.services = {};
-    this.select = select({ owner: this, services: this.services });
+    this.select = select({ monkey: this });
   }
 
   register(service) {
@@ -30,7 +33,7 @@ class CloudMonkey {
     Object.values(this.services).forEach(service => service.help(outln));
   }
 
-  selectFilter({ resourceType, one }) {
+  selectResource({ service, resourceType, one }) {
     return async (filters = {}) => {
       const supported = resourceType.filters;
       const unsupported = Object.keys(filters).filter(key => !supported.includes(key));
@@ -43,20 +46,46 @@ class CloudMonkey {
       }
       if (one) {
         if (list.length === 0) {
-          return Promise.reject(new Error('no resources found'));
+          return Promise.reject(new Error('one resource expected but none found'));
         }
         if (list.length === 1) {
-          return Promise.resolve(decorate({ data: list[0], owner: this }));
+          return Promise.resolve(
+            decorate({ data: list[0], service, resourceType, monkey: this })
+          );
         }
         return Promise.reject(new Error('one resource expected but multiple found'));
       }
-      return Promise.resolve(list.map(data => decorate({ data, owner: this })));
+      return Promise.resolve(
+        decorate({
+          data: list.map(item => decorate({ data: item, service, resourceType, monkey: this })),
+          service,
+          resourceType,
+          array: true,
+          monkey: this,
+        })
+      );
     };
   }
 
-  dataDump(data) { // eslint-disable-line class-methods-use-this
-    const outln = console.log; // eslint-disable-line no-console
-    outln(util.inspect(data, { depth: null }));
+  dataTravel({ data, service, travelResourceType: resourceType, travelFunction, array }) {
+    return async () => {
+      const dataArray = array ? data : [data];
+      const resolved = await Promise.all(dataArray.map(item => travelFunction(item)));
+      const list = _.unionBy(...resolved, resourceType.identity);
+      return Promise.resolve(
+        decorate({
+          data: list.map(item => decorate({ data: item, service, resourceType, monkey: this })),
+          service,
+          resourceType,
+          array: true,
+          monkey: this,
+        })
+      );
+    };
+  }
+
+  dataDump(data) {
+    console.log(util.inspect(data, { depth: null })); // eslint-disable-line no-console
   }
 }
 

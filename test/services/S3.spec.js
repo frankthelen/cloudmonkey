@@ -91,17 +91,31 @@ describe('S3', () => {
       monkey.register(new S3({ region: 'eu-central-1' }));
     });
 
-    it('should decorate', async () => {
+    it('`one.s3.bucket` should be decorated / one', async () => {
       const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
-      expect(data.cloudMonkey).has.property('dump');
+      expect(data.cloudMonkey.dump).to.not.be.undefined;
+      expect(data.cloudMonkey.travel).to.not.be.undefined;
     });
 
-    it('should decorate / provide shortcuts', async () => {
-      const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
-      expect(data.dump).to.be.a('function');
+    it('`all.s3.buckets` should be decorated / array', async () => {
+      const data = await monkey.select.all.s3.buckets();
+      expect(data.cloudMonkey.dump).to.not.be.undefined;
+      expect(data.cloudMonkey.travel).to.not.be.undefined;
     });
 
-    it('should decorate but fail if conflicting with own property', async () => {
+    it('`one.s3.bucket` should be decorated with shortcuts / one', async () => {
+      const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
+      expect(data.dump).to.not.be.undefined;
+      expect(data.travel).to.not.be.undefined;
+    });
+
+    it('`all.s3.buckets` should be decorated with shortcut / array', async () => {
+      const data = await monkey.select.all.s3.buckets();
+      expect(data.dump).to.not.be.undefined;
+      expect(data.travel).to.not.be.undefined;
+    });
+
+    it('`one.s3.bucket` decoration should throw if conflicting with own property', async () => {
       const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
       data.dump = () => {};
       expect(() => { data.dump(); }).to.throw(Error);

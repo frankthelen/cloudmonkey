@@ -18,6 +18,7 @@ class EC2 extends Service {
         return data.Reservations.reduce((acc, res) => [...acc, ...res.Instances], [])
           .filter(item => !id || item.InstanceId === id);
       },
+      identity: item => item.InstanceId,
     });
     this.register({
       name: 'internetGateway',
@@ -27,6 +28,10 @@ class EC2 extends Service {
         const data = await this.aws.describeInternetGateways(params).promise();
         return data.InternetGateways
           .filter(item => !id || item.InternetGatewayId === id);
+      },
+      identity: item => item.InternetGatewayId,
+      travel: {
+        routeTable: async () => Promise.resolve([]), // TODO: travel internetGateway -> routeTable
       },
     });
     this.register({
@@ -38,6 +43,7 @@ class EC2 extends Service {
         return data.RouteTables
           .filter(item => !id || item.RouteTableId === id);
       },
+      identity: item => item.RouteTableId,
     });
     this.register({
       name: 'securityGroup',
@@ -51,6 +57,7 @@ class EC2 extends Service {
           .filter(item => !id || item.GroupId === id)
           .filter(item => !name || item.GroupName === name);
       },
+      identity: item => item.GroupName,
     });
     this.register({
       name: 'subnet',
@@ -61,6 +68,7 @@ class EC2 extends Service {
         return data.Subnets
           .filter(item => !id || item.SubnetId === id);
       },
+      identity: item => item.SubnetId,
     });
   }
 }

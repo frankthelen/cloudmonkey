@@ -7,13 +7,17 @@ class Service {
     this.resourceTypes = {};
   }
 
-  register({ name, filters = [], list }) {
+  register({ name, filters = [], list, travel = {}, identity }) {
     assert(name, '"name" is required');
     assert(list, '"list" is required');
     assert(typeof list === 'function', '"list" must be an async function');
+    assert(identity, '"identity" is required');
+    assert(typeof identity === 'function', '"identity" must be a function');
     this.resourceTypes[name] = {
       filters,
       list,
+      travel,
+      identity,
     };
   }
 
@@ -26,6 +30,12 @@ class Service {
         const filtersStr = filters
           .reduce((acc, filter, i) => `${acc}${i ? ', ' : ''}"${filter}"`, '');
         outln(`  filter by ${filtersStr}`);
+      }
+      const travel = Object.keys(resourceType.travel);
+      if (travel.length) {
+        const travelStr = travel
+          .reduce((acc, rt, i) => `${acc}${i ? ', ' : ''}"${rt}"`, '');
+        outln(`  travel to ${travelStr}`);
       }
     });
     outln();

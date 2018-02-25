@@ -71,17 +71,31 @@ describe('EC2', () => {
       monkey.register(new EC2({ region: 'eu-central-1' }));
     });
 
-    it('should decorate', async () => {
+    it('`one.ec2.internetGateway` should be decorated / one', async () => {
       const data = await monkey.select.one.ec2.internetGateway();
-      expect(data.cloudMonkey).has.property('dump');
+      expect(data.cloudMonkey.dump).to.not.be.undefined;
+      expect(data.cloudMonkey.travel).to.not.be.undefined;
     });
 
-    it('should decorate / provide shortcuts', async () => {
-      const data = await monkey.select.one.ec2.internetGateway();
-      expect(data.dump).to.be.a('function');
+    it('`all.ec2.internetGateways` should be decorated / array', async () => {
+      const data = await monkey.select.all.ec2.internetGateways();
+      expect(data.cloudMonkey.dump).to.not.be.undefined;
+      expect(data.cloudMonkey.travel).to.not.be.undefined;
     });
 
-    it('should decorate but fail if conflicting with own property', async () => {
+    it('`one.ec2.internetGateway` should be decorated with shortcuts / one', async () => {
+      const data = await monkey.select.one.ec2.internetGateway();
+      expect(data.dump).to.not.be.undefined;
+      expect(data.travel).to.not.be.undefined;
+    });
+
+    it('`all.ec2.internetGateways` should be decorated with shortcuts / array', async () => {
+      const data = await monkey.select.all.ec2.internetGateways();
+      expect(data.dump).to.not.be.undefined;
+      expect(data.travel).to.not.be.undefined;
+    });
+
+    it('`one.ec2.internetGateway` decoration should throw if conflicting with own property', async () => {
       const data = await monkey.select.one.ec2.internetGateway();
       data.dump = () => {};
       expect(() => { data.dump(); }).to.throw(Error);

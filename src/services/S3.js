@@ -15,6 +15,7 @@ class S3 extends Service {
         const { Buckets } = data;
         return name ? Buckets.filter(item => item.Name === name) : Buckets;
       },
+      identity: item => item.Name,
     });
   }
 }

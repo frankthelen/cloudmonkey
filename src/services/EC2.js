@@ -9,25 +9,27 @@ class EC2 extends Service {
     this.aws = new AWS.EC2({ apiVersion: '2016-11-15', region });
     this.register({
       name: 'instance',
-      filters: ['id'],
-      list: async ({ id }) => {
+      list: async () => {
         const params = {
           MaxResults: 1000, // TODO: paging
         };
         const data = await this.aws.describeInstances(params).promise();
-        return data.Reservations.reduce((acc, res) => [...acc, ...res.Instances], [])
-          .filter(item => !id || item.InstanceId === id);
+        return data.Reservations.reduce((acc, res) => [...acc, ...res.Instances], []);
+      },
+      filters: {
+        id: (item, value) => item.InstanceId === value,
       },
       identity: item => item.InstanceId,
     });
     this.register({
       name: 'internetGateway',
-      filters: ['id'],
-      list: async ({ id }) => {
+      list: async () => {
         const params = {};
         const data = await this.aws.describeInternetGateways(params).promise();
-        return data.InternetGateways
-          .filter(item => !id || item.InternetGatewayId === id);
+        return data.InternetGateways;
+      },
+      filters: {
+        id: (item, value) => item.InternetGatewayId === value,
       },
       identity: item => item.InternetGatewayId,
       travel: {
@@ -36,37 +38,40 @@ class EC2 extends Service {
     });
     this.register({
       name: 'routeTable',
-      filters: ['id'],
-      list: async ({ id }) => {
+      list: async () => {
         const params = {};
         const data = await this.aws.describeRouteTables(params).promise();
-        return data.RouteTables
-          .filter(item => !id || item.RouteTableId === id);
+        return data.RouteTables;
+      },
+      filters: {
+        id: (item, value) => item.RouteTableId === value,
       },
       identity: item => item.RouteTableId,
     });
     this.register({
       name: 'securityGroup',
-      filters: ['id', 'name'],
-      list: async ({ id, name }) => {
+      list: async () => {
         const params = {
           MaxResults: 1000, // TODO: paging
         };
         const data = await this.aws.describeSecurityGroups(params).promise();
-        return data.SecurityGroups
-          .filter(item => !id || item.GroupId === id)
-          .filter(item => !name || item.GroupName === name);
+        return data.SecurityGroups;
       },
-      identity: item => item.GroupName,
+      filters: {
+        id: (item, value) => item.GroupId === value,
+        name: (item, value) => item.GroupName === value,
+      },
+      identity: item => item.GroupId,
     });
     this.register({
       name: 'subnet',
-      filters: ['id'],
-      list: async ({ id }) => {
+      list: async () => {
         const params = {};
         const data = await this.aws.describeSubnets(params).promise();
-        return data.Subnets
-          .filter(item => !id || item.SubnetId === id);
+        return data.Subnets;
+      },
+      filters: {
+        id: (item, value) => item.SubnetId === value,
       },
       identity: item => item.SubnetId,
     });

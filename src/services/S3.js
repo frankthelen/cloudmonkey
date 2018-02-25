@@ -9,11 +9,12 @@ class S3 extends Service {
     this.aws = new AWS.S3({ apiVersion: '2006-03-01', region });
     this.register({
       name: 'bucket',
-      filters: ['name'],
-      list: async ({ name } = {}) => {
+      list: async () => {
         const data = await this.aws.listBuckets().promise();
-        const { Buckets } = data;
-        return name ? Buckets.filter(item => item.Name === name) : Buckets;
+        return data.Buckets;
+      },
+      filters: {
+        name: (item, value) => item.Name === value,
       },
       identity: item => item.Name,
     });

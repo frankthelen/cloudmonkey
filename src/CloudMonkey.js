@@ -35,15 +35,16 @@ class CloudMonkey {
 
   selectResource({ service, resourceType, one }) {
     return async (filters = {}) => {
-      const supported = resourceType.filters;
-      const unsupported = Object.keys(filters).filter(key => !supported.includes(key));
-      if (unsupported.length) {
-        return Promise.reject(new Error(`unsupported filters: ${unsupported}`));
+      const unsupportedFilters = Object.keys(filters)
+        .reduce((acc, filter) => (resourceType.filters[filter] ? acc : [...acc, filter]), []);
+      if (unsupportedFilters.length) {
+        return Promise.reject(new Error(`unsupported filters: ${unsupportedFilters}`));
       }
-      const list = await resourceType.list(filters);
-      if (!list) {
-        return Promise.reject(new Error('no resources found'));
-      }
+      const listComplete = await resourceType.list();
+      const list = Object.entries(filters).reduce((acc, [name, value]) => {
+        const filterFunction = resourceType.filters[name];
+        return acc.filter(item => filterFunction(item, value));
+      }, listComplete);
       if (one) {
         if (list.length === 0) {
           return Promise.reject(new Error('one resource expected but none found'));
@@ -68,10 +69,11 @@ class CloudMonkey {
   }
 
   dataTravel({ data, service, travelResourceType: resourceType, travelFunction, array }) {
-    return async () => {
+    return async (filters = {}) => {
       const dataArray = array ? data : [data];
-      const resolved = await Promise.all(dataArray.map(item => travelFunction(item)));
-      const list = _.unionBy(...resolved, resourceType.identity);
+      const listPartitioned = await Promise.all(dataArray.map(item => travelFunction(item)));
+      const list = _.unionBy(...listPartitioned, resourceType.identity);
+      // TODO: Apply filters
       return Promise.resolve(
         decorate({
           data: list.map(item => decorate({ data: item, service, resourceType, monkey: this })),

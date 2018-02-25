@@ -7,15 +7,15 @@ class Service {
     this.resourceTypes = {};
   }
 
-  register({ name, filters = [], list, travel = {}, identity }) {
+  register({ name, list, filters = {}, travel = {}, identity }) {
     assert(name, '"name" is required');
     assert(list, '"list" is required');
     assert(typeof list === 'function', '"list" must be an async function');
     assert(identity, '"identity" is required');
     assert(typeof identity === 'function', '"identity" must be a function');
     this.resourceTypes[name] = {
-      filters,
       list,
+      filters,
       travel,
       identity,
     };
@@ -24,8 +24,8 @@ class Service {
   help(outln = console.log) { // eslint-disable-line no-console
     outln(`service "${this.name}"`);
     Object.entries(this.resourceTypes).forEach(([name, resourceType]) => {
-      const { filters } = resourceType;
       outln(`- resource type "${name}"`);
+      const filters = Object.keys(resourceType.filters);
       if (filters.length) {
         const filtersStr = filters
           .reduce((acc, filter, i) => `${acc}${i ? ', ' : ''}"${filter}"`, '');

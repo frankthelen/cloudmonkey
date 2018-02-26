@@ -17,7 +17,7 @@
     "function-paren-newline": ["error", "consistent"],
     "object-curly-newline": ["error", {
       "consistent": true,
-      "minProperties": 6
+      "minProperties": 7
     }]
   }
 }

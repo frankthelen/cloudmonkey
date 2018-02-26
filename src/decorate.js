@@ -2,23 +2,44 @@
 // Examples:
 // * data.dump();
 // * data.cloudMonkey.dump();
-// * data.travel.routeTables();
-// * data.cloudMonkey.travel.routeTables();
+// * data.travel.to.all.routeTables();
+// * data.cloudMonkey.travel.to.all.routeTables();
 
-const travelInterface = ({ monkey, service, resourceType, array }) => ({
+const travelInterface = ({ monkey, service, resourceType, array, one }) => ({
   get: (target, prop) => { // trap
     const alt = prop.match(/^(.+)s$/) ? prop.slice(0, -1) : prop; // singular if plural
     const travelResourceType = service.resourceTypes[prop] || service.resourceTypes[alt];
     if (!travelResourceType) {
-      throw new Error(`invalid travel, unknown resource type: "${prop}"`);
+      throw new Error(`invalid travel syntax, unknown resource type: "${prop}"`);
     }
     const travelFunction = resourceType.travel[prop] || resourceType.travel[alt];
     if (!travelFunction) {
-      throw new Error(`invalid travel, resource type not allowed: "${prop}"`);
+      throw new Error(`invalid travel syntax, resource type not allowed: "${prop}"`);
     }
     return monkey.dataTravel({
-      data: target, resourceType, travelResourceType, travelFunction, array,
+      data: target, resourceType: travelResourceType, travelFunction, array, one,
     });
+  },
+});
+
+const quantifierInterface = ({ monkey, service, resourceType, array }) => ({
+  get: (target, prop) => { // trap
+    if (prop === 'one') { // eslint-disable-next-line max-len
+      return new Proxy(target, travelInterface({ monkey, service, resourceType, array, one: true }));
+    }
+    if (prop === 'all' || prop === 'some') {
+      return new Proxy(target, travelInterface({ monkey, service, resourceType, array }));
+    }
+    throw new Error(`invalid travel syntax, unknown quantifier: "${prop}"`);
+  },
+});
+
+const toInterface = ({ monkey, service, resourceType, array }) => ({
+  get: (target, prop) => { // trap
+    if (prop === 'to') {
+      return new Proxy(target, quantifierInterface({ monkey, service, resourceType, array }));
+    }
+    throw new Error(`invalid travel syntax, "to" expected but "${prop}" found`);
   },
 });
 
@@ -26,7 +47,7 @@ const dataInterface = ({ monkey, data, service, resourceType, array }) => ({
   dump: () => {
     monkey.dataDump(data);
   },
-  travel: new Proxy(data, travelInterface({ monkey, service, resourceType, array })),
+  travel: new Proxy(data, toInterface({ monkey, service, resourceType, array })),
 });
 
 const decorator = ({ monkey, service, resourceType, array }) => ({

@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const assert = require('assert');
 const util = require('util');
+const Promise = require('bluebird');
 const select = require('./select');
 const decorate = require('./decorate');
 const S3 = require('./services/S3');
@@ -34,56 +35,54 @@ class CloudMonkey {
   }
 
   selectResource({ service, resourceType, one }) {
-    return async (filters = {}) => {
-      const unsupportedFilters = Object.keys(filters)
-        .reduce((acc, filter) => (resourceType.filters[filter] ? acc : [...acc, filter]), []);
-      if (unsupportedFilters.length) {
-        return Promise.reject(new Error(`unsupported filters: ${unsupportedFilters}`));
-      }
-      const listComplete = await resourceType.list();
-      const list = Object.entries(filters).reduce((acc, [name, value]) => {
-        const filterFunction = resourceType.filters[name];
-        return acc.filter(item => filterFunction(item, value));
-      }, listComplete);
-      if (one) {
-        if (list.length === 0) {
-          return Promise.reject(new Error('one resource expected but none found'));
-        }
-        if (list.length === 1) {
-          return Promise.resolve(
-            decorate({ data: list[0], service, resourceType, monkey: this })
-          );
-        }
-        return Promise.reject(new Error('one resource expected but multiple found'));
-      }
-      return Promise.resolve(
-        decorate({
-          data: list.map(item => decorate({ data: item, service, resourceType, monkey: this })),
-          service,
-          resourceType,
-          array: true,
-          monkey: this,
-        })
-      );
-    };
+    return async (filters = {}) =>
+      Promise.try(async () => {
+        const listComplete = await resourceType.list();
+        const listFiltered = this.dataFilter({ list: listComplete, resourceType, filters });
+        const listDecorated = this.dataDecorate({ list: listFiltered, one, service, resourceType });
+        return listDecorated;
+      });
   }
 
-  dataTravel({ data, service, travelResourceType: resourceType, travelFunction, array }) {
-    return async (filters = {}) => {
-      const dataArray = array ? data : [data];
-      const listPartitioned = await Promise.all(dataArray.map(item => travelFunction(item)));
-      const list = _.unionBy(...listPartitioned, resourceType.identity);
-      // TODO: Apply filters
-      return Promise.resolve(
-        decorate({
-          data: list.map(item => decorate({ data: item, service, resourceType, monkey: this })),
-          service,
-          resourceType,
-          array: true,
-          monkey: this,
-        })
-      );
-    };
+  dataTravel({ data, array, service, resourceType, travelFunction, one }) {
+    return async (filters = {}) =>
+      Promise.try(async () => {
+        const dataArray = array ? data : [data];
+        const listPartitioned = await Promise.all(dataArray.map(item => travelFunction(item)));
+        const listComplete = _.unionBy(...listPartitioned, resourceType.identity);
+        const listFiltered = this.dataFilter({ list: listComplete, resourceType, filters });
+        const listDecorated = this.dataDecorate({ list: listFiltered, one, service, resourceType });
+        return listDecorated;
+      });
+  }
+
+  dataFilter({ list, resourceType, filters }) {
+    return Object.entries(filters).reduce((acc, [filter, value]) => {
+      const filterFunction = resourceType.filters[filter];
+      if (!filterFunction) {
+        throw new Error(`unsupported filter: ${filter}`);
+      }
+      return acc.filter(item => filterFunction(item, value));
+    }, list);
+  }
+
+  dataDecorate({ list, one, service, resourceType }) {
+    if (one) {
+      if (list.length === 0) {
+        throw new Error('one resource expected but none found');
+      }
+      if (list.length === 1) {
+        return decorate({ data: list[0], service, resourceType, monkey: this });
+      }
+      throw new Error('one resource expected but multiple found');
+    }
+    return decorate({
+      data: list.map(item => decorate({ data: item, service, resourceType, monkey: this })),
+      service,
+      resourceType,
+      array: true,
+      monkey: this,
+    });
   }
 
   dataDump(data) {

@@ -18,6 +18,7 @@ class EC2 extends Service {
       },
       filters: {
         id: (item, value) => item.InstanceId === value,
+        vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.InstanceId,
     });
@@ -30,6 +31,7 @@ class EC2 extends Service {
       },
       filters: {
         id: (item, value) => item.InternetGatewayId === value,
+        vpc: (item, value) => item.Attachments.filter(att => att.VpcId === value).length,
       },
       identity: item => item.InternetGatewayId,
       travel: {
@@ -45,6 +47,7 @@ class EC2 extends Service {
       },
       filters: {
         id: (item, value) => item.RouteTableId === value,
+        vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.RouteTableId,
     });
@@ -60,6 +63,7 @@ class EC2 extends Service {
       filters: {
         id: (item, value) => item.GroupId === value,
         name: (item, value) => item.GroupName === value,
+        vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.GroupId,
     });
@@ -72,6 +76,7 @@ class EC2 extends Service {
       },
       filters: {
         id: (item, value) => item.SubnetId === value,
+        vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.SubnetId,
     });

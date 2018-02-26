@@ -7,15 +7,14 @@ class EC2 extends Service {
     super({ name: 'ec2', alias });
     assert(region, '"region" is required');
     this.aws = new AWS.EC2({ apiVersion: '2016-11-15', region });
+    this.cache = {};
+    this.registerServices();
+  }
+
+  registerServices() {
     this.register({
       name: 'instance',
-      list: async () => {
-        const params = {
-          MaxResults: 1000, // TODO: paging
-        };
-        const data = await this.aws.describeInstances(params).promise();
-        return data.Reservations.reduce((acc, res) => [...acc, ...res.Instances], []);
-      },
+      list: async () => this.loadResources('instance'),
       filters: {
         id: (item, value) => item.InstanceId === value,
         vpc: (item, value) => item.VpcId === value,
@@ -24,11 +23,7 @@ class EC2 extends Service {
     });
     this.register({
       name: 'internetGateway',
-      list: async () => {
-        const params = {};
-        const data = await this.aws.describeInternetGateways(params).promise();
-        return data.InternetGateways;
-      },
+      list: async () => this.loadResources('internetGateway'),
       filters: {
         id: (item, value) => item.InternetGatewayId === value,
         vpc: (item, value) => item.Attachments.filter(att => att.VpcId === value).length,
@@ -40,11 +35,7 @@ class EC2 extends Service {
     });
     this.register({
       name: 'routeTable',
-      list: async () => {
-        const params = {};
-        const data = await this.aws.describeRouteTables(params).promise();
-        return data.RouteTables;
-      },
+      list: async () => this.loadResources('routeTable'),
       filters: {
         id: (item, value) => item.RouteTableId === value,
         vpc: (item, value) => item.VpcId === value,
@@ -53,13 +44,7 @@ class EC2 extends Service {
     });
     this.register({
       name: 'securityGroup',
-      list: async () => {
-        const params = {
-          MaxResults: 1000, // TODO: paging
-        };
-        const data = await this.aws.describeSecurityGroups(params).promise();
-        return data.SecurityGroups;
-      },
+      list: async () => this.loadResources('securityGroup'),
       filters: {
         id: (item, value) => item.GroupId === value,
         name: (item, value) => item.GroupName === value,
@@ -69,17 +54,43 @@ class EC2 extends Service {
     });
     this.register({
       name: 'subnet',
-      list: async () => {
-        const params = {};
-        const data = await this.aws.describeSubnets(params).promise();
-        return data.Subnets;
-      },
+      list: async () => this.loadResources('subnet'),
       filters: {
         id: (item, value) => item.SubnetId === value,
         vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.SubnetId,
     });
+  }
+
+  async loadResources(resourceType) {
+    if (this.cache[resourceType]) {
+      return this.cache[resourceType];
+    }
+    let list;
+    if (resourceType === 'instance') {
+      const params = { MaxResults: 1000 }; // TODO: paging
+      const data = await this.aws.describeInstances(params).promise();
+      list = data.Reservations.reduce((acc, res) => [...acc, ...res.Instances], []);
+    } else if (resourceType === 'internetGateway') {
+      const params = {};
+      const data = await this.aws.describeInternetGateways(params).promise();
+      list = data.InternetGateways;
+    } else if (resourceType === 'routeTable') {
+      const params = {};
+      const data = await this.aws.describeRouteTables(params).promise();
+      list = data.RouteTables;
+    } else if (resourceType === 'securityGroup') {
+      const params = { MaxResults: 1000 }; // TODO: paging
+      const data = await this.aws.describeSecurityGroups(params).promise();
+      list = data.SecurityGroups;
+    } else if (resourceType === 'subnet') {
+      const params = {};
+      const data = await this.aws.describeSubnets(params).promise();
+      list = data.Subnets;
+    }
+    this.cache[resourceType] = list;
+    return list;
   }
 }
 

@@ -24,7 +24,7 @@ class Service {
   help(outln = console.log) { // eslint-disable-line no-console
     outln(`service "${this.name}"`);
     Object.entries(this.resourceTypes).forEach(([name, resourceType]) => {
-      outln(`- resource type "${name}"`);
+      outln(`* resource type "${name}"`);
       const filters = Object.keys(resourceType.filters);
       if (filters.length) {
         const filtersStr = filters

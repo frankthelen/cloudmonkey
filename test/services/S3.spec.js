@@ -115,10 +115,19 @@ describe('S3', () => {
       expect(data.travel).to.not.be.undefined;
     });
 
-    it('`one.s3.bucket` decoration should throw if conflicting with own property', async () => {
+    it('own property should have higher priority', async () => {
       const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
-      data.dump = () => {};
-      expect(() => { data.dump(); }).to.throw(Error);
+      data.dump = 'blablub';
+      let value;
+      expect(() => { value = data.dump; }).to.not.throw(Error);
+      expect(value).to.be.equal('blablub');
+    });
+
+    it('own property should have higher priority', async () => {
+      const data = await monkey.select.all.s3.buckets();
+      data.dump = 'blablub';
+      expect(data.dump).to.be.a('string');
+      expect(data.cloudMonkey.dump).to.be.a('function');
     });
   });
 });

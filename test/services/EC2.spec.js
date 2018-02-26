@@ -95,10 +95,11 @@ describe('EC2', () => {
       expect(data.travel).to.not.be.undefined;
     });
 
-    it('`one.ec2.internetGateway` decoration should throw if conflicting with own property', async () => {
+    it('own property should have higher priority', async () => {
       const data = await monkey.select.one.ec2.internetGateway();
-      data.dump = () => {};
-      expect(() => { data.dump(); }).to.throw(Error);
+      data.dump = 'blablub';
+      expect(data.dump).to.be.a('string');
+      expect(data.cloudMonkey.dump).to.be.a('function');
     });
   });
 });

@@ -55,12 +55,8 @@ const decorator = ({ monkey, service, resourceType, array }) => ({
     if (prop === monkey.decorator) {
       return dataInterface({ monkey, data: target, service, resourceType, array });
     }
-    if (['dump', 'travel'].includes(prop)) {
-      if (Object.prototype.hasOwnProperty.call(target, prop)) {
-        throw new Error(
-          `target has own property "${prop}", use "${monkey.decorator}.${prop}" instead`
-        );
-      }
+    if (['dump', 'travel'].includes(prop) &&
+      !Object.prototype.hasOwnProperty.call(target, prop)) {
       return dataInterface({ monkey, data: target, service, resourceType, array })[prop];
     }
     return target[prop];

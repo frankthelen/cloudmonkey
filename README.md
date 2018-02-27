@@ -28,7 +28,7 @@ npm install cloudmonkey
 
 ## Usage
 
-A quick example (mocha/chai):
+A quick example (assuming mocha and chai):
 ```javascript
 const { CloudMonkey, EC2 } = require('cloudmonkey');
 
@@ -48,7 +48,7 @@ describe('my subnets', () => {
 
 ## Prerequisites
 
-Setup [access to your AWS account](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-started-nodejs.html#getting-started-nodejs-configure-keys).
+Configure the [AWS access keys](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-started-nodejs.html#getting-started-nodejs-configure-keys).
 
 ## Features
 ### Register services and resource types
@@ -63,7 +63,7 @@ monkey.register(new EC2({ region: 'eu-central-1' }));
 monkey.help();
 ```
 
-Use `help()` to printout some information such as the registered services, their resource types, filter and travel options:
+Use `help()` to printout information such as the registered services, their resource types, filter and travel options:
 ```bash
 CloudMonkey 1.0.0-alpha.0
 
@@ -111,7 +111,7 @@ rtb.dump();
 
 ### Travel to other resources
 
-The travel syntax allows to travel from resources (of one resource type) to related resources (of another resource type within the same service). Use `help()` (see above) to learn which travel and filter options are available for a particular resource type.
+The travel syntax allows to travel from resources (of one resource type) to related resources (of another resource type within the same service). It can be combined with filters. Use `help()` (see above) to learn which travel and filter options are available for a particular resource type.
 
 ```javascript
 const igw = await monkey.select.one.ec2.internetGateway();

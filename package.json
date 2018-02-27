@@ -29,9 +29,8 @@
     "node": ">=8.9.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.202.0",
+    "aws-sdk": "^2.203.0",
     "bluebird": "^3.5.1",
-    "config": "^1.29.4",
     "lodash": "^4.17.5"
   },
   "devDependencies": {
@@ -46,9 +45,9 @@
     "eslint-plugin-should-promised": "^2.0.0",
     "mocha": "^5.0.1",
     "mock-aws-sinon": "^1.0.6",
-    "nodemon": "^1.15.1",
+    "nodemon": "^1.17.1",
     "nyc": "^11.4.1",
-    "sinon": "^4.4.1",
+    "sinon": "^4.4.2",
     "sinon-chai": "^2.14.0"
   }
 }

@@ -7,10 +7,10 @@ class EC2 extends Service {
     super({ name: 'ec2', alias });
     assert(region, '"region" is required');
     this.aws = new AWS.EC2({ apiVersion: '2016-11-15', region });
-    this.registerServices();
+    this.registerResourceTypes();
   }
 
-  registerServices() {
+  registerResourceTypes() {
     this.register({
       name: 'instance',
       list: async () => this.loadResources('instance'),

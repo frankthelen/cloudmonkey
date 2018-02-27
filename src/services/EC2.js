@@ -30,7 +30,11 @@ class EC2 extends Service {
       },
       identity: item => item.InternetGatewayId,
       travel: {
-        routeTable: async () => Promise.resolve([]), // TODO: travel internetGateway -> routeTable
+        routeTable: async (items) => {
+          const rt = await this.loadResources('routeTable');
+          const ids = items.map(item => item.InternetGatewayId);
+          return rt.filter(r => r.Routes.filter(x => ids.includes(x.GatewayId)).length);
+        },
       },
     });
     this.register({

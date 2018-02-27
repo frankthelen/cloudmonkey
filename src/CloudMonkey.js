@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const assert = require('assert');
 const util = require('util');
 const Promise = require('bluebird');
@@ -47,9 +46,7 @@ class CloudMonkey {
   dataTravel({ data, array, service, resourceType, travelFunction, one }) {
     return async (filters = {}) =>
       Promise.try(async () => {
-        const dataArray = array ? data : [data];
-        const listPartitioned = await Promise.all(dataArray.map(item => travelFunction(item)));
-        const listComplete = _.unionBy(...listPartitioned, resourceType.identity);
+        const listComplete = await travelFunction(array ? data : [data]);
         const listFiltered = this.dataFilter({ list: listComplete, resourceType, filters });
         const listDecorated = this.dataDecorate({ list: listFiltered, one, service, resourceType });
         return listDecorated;

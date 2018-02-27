@@ -7,6 +7,10 @@ class S3 extends Service {
     super({ name: 's3', alias });
     assert(region, '"region" is required');
     this.aws = new AWS.S3({ apiVersion: '2006-03-01', region });
+    this.registerResourceTypes();
+  }
+
+  registerResourceTypes() {
     this.register({
       name: 'bucket',
       list: async () => {

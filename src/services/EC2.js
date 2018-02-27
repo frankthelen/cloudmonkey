@@ -29,10 +29,11 @@ class EC2 extends Service {
       },
       identity: item => item.InternetGatewayId,
       travel: {
-        routeTable: async (items) => {
-          const rt = await this.loadResources('routeTable');
-          const ids = items.map(item => item.InternetGatewayId);
-          return rt.filter(r => r.Routes.filter(x => ids.includes(x.GatewayId)).length);
+        routeTable: async (igws) => {
+          const igwIds = igws.map(igw => igw.InternetGatewayId);
+          const rts = await this.loadResources('routeTable');
+          return rts.filter(rt =>
+            rt.Routes.filter(route => igwIds.includes(route.GatewayId)).length);
         },
       },
     });
@@ -44,6 +45,14 @@ class EC2 extends Service {
         vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.RouteTableId,
+      travel: {
+        subnet: async (rts) => {
+          const snIds = rts.reduce((acc, rt) =>
+            [...acc, ...rt.Associations.map(a => a.SubnetId)], []);
+          const sns = await this.loadResources('subnet');
+          return sns.filter(sn => snIds.includes(sn.SubnetId));
+        },
+      },
     });
     this.register({
       name: 'securityGroup',

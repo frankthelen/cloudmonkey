@@ -17,7 +17,7 @@ const travelInterface = ({ monkey, service, resourceType, array, one }) => ({
       throw new Error(`invalid travel syntax, resource type not allowed: "${prop}"`);
     }
     return monkey.dataTravel({
-      data: target, resourceType: travelResourceType, travelFunction, array, one,
+      data: target, service, resourceType: travelResourceType, travelFunction, array, one,
     });
   },
 });

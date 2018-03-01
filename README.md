@@ -7,9 +7,9 @@ unit testing of infrastructure scripts (Terraform, CloudFormation, etc.) on the 
 and live integration testing of the real infrastructure on the other hand.
 CloudMonkey pulls meta information of cloud infrastructure elements
 and provides them through a unified abstract interface for testing.
-Write assertions using your preferred test runner and assertion library.
+Write assertions against your cloud infrastructure
+using your preferred test runner and assertion library.
 Services and resource types are extendable and pluggable.
-This project is **EXPERIMENTAL** and at a very early stage.
 
 [![Build Status](https://travis-ci.org/frankthelen/cloudmonkey.svg?branch=master)](https://travis-ci.org/frankthelen/cloudmonkey)
 [![Coverage Status](https://coveralls.io/repos/github/frankthelen/cloudmonkey/badge.svg?branch=master)](https://coveralls.io/github/frankthelen/cloudmonkey?branch=master)
@@ -41,7 +41,9 @@ describe('my subnets', () => {
     const rtb = await igw.travel.to.all.routeTables();
     const sn = await rtb.travel.to.all.subnets();
     expect(sn).to.containAll(subnet =>
-      subnet.Tags.filter(tag => tag.Key === 'security-zone' && tag.Value === 'c').length);
+      subnet.Tags.filter(tag =>
+        tag.Key === 'security-zone' &&
+        tag.Value === 'c').length);
   });
 });
 ```
@@ -53,7 +55,10 @@ Configure the [AWS access keys](https://docs.aws.amazon.com/sdk-for-javascript/v
 ## Features
 ### Register services and resource types
 
-The underlying model knows services and resource types. Services must be registered with CloudMonkey. Each service defines its resource types. Services are registered like this:
+The interface model knows services and resource types.
+Services must be registered with CloudMonkey.
+Each service defines its resource types.
+Services are registered like this:
 
 ```javascript
 const { CloudMonkey, EC2 } = require('cloudmonkey');
@@ -63,7 +68,8 @@ monkey.register(new EC2({ region: 'eu-central-1' }));
 monkey.help();
 ```
 
-Use `help()` to printout information such as the registered services, their resource types, filter and travel options:
+Use `help()` to printout information such as the registered services,
+their resource types, filter and travel options:
 ```bash
 CloudMonkey 1.0.0-alpha.0
 
@@ -91,7 +97,7 @@ const monkey = new CloudMonkey();
 const igw = await monkey.select.one.ec2.internetGateway({ vpc: 'vpc-12345678' });
 ```
 
-The general form of select is:
+The general format is this:
 ```
 select.<quantifier>.<service>.<resourceType>(<filter>)
 ```
@@ -120,7 +126,7 @@ const sn = await rtb.travel.to.all.subnets();
 sn.dump();
 ```
 
-The general form is:
+The general format is this:
 ```
 data.travel.to.<quantifier>.<resourceType>(<filter>)
 ```

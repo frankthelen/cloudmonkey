@@ -4,6 +4,7 @@ const AWS = require('@mapbox/mock-aws-sdk-js');
 const { CloudMonkey, EC2 } = require('../..');
 const mockDescribeInternetGateways = require('../mocks/internetGateways');
 const mockDescribeRouteTables = require('../mocks/routeTables');
+const mockDescribeSubnets = require('../mocks/subnets');
 
 describe('EC2', () => {
   before(() => {
@@ -15,6 +16,11 @@ describe('EC2', () => {
     AWS.stub('EC2', 'describeRouteTables').returns({
       promise: () => {
         return Promise.resolve(mockDescribeRouteTables);
+      },
+    });
+    AWS.stub('EC2', 'describeSubnets').returns({
+      promise: () => {
+        return Promise.resolve(mockDescribeSubnets);
       },
     });
   });
@@ -82,6 +88,11 @@ describe('EC2', () => {
       const data = await monkey.select.one.ec2.routeTable({ id: 'rtb-e83ee289' });
       expect(data.RouteTableId).to.be.equal('rtb-e83ee289');
     });
+
+    it('`one.ec2.subnet` should return subnet / filter by id', async () => {
+      const data = await monkey.select.one.ec2.subnet({ id: 'subnet-347eab82' });
+      expect(data.SubnetId).to.be.equal('subnet-347eab82');
+    });
   });
 
   describe('data interface', () => {
@@ -123,13 +134,26 @@ describe('EC2', () => {
       expect(data.cloudMonkey.dump).to.be.a('function');
     });
 
-    it('`travel` should travel from one internet gateway to all route tables', async () => {
+    it('`travel` should travel from one internet gateway to route tables', async () => {
       const igw = await monkey.select.one.ec2.internetGateway();
       const rt = await igw.travel.to.all.routeTables();
       expect(rt).to.be.an('array').with.a.lengthOf(1);
     });
 
-    it('`travel` should travel from internet gateways to all route tables', async () => {
+    it('`travel` should travel from internet gateways to route tables', async () => {
+      const igw = await monkey.select.all.ec2.internetGateways();
+      const rt = await igw.travel.to.all.routeTables();
+      expect(rt).to.be.an('array').with.a.lengthOf(1);
+    });
+
+    it('`travel` should travel from one route tables to subnets', async () => {
+      const igw = await monkey.select.one.ec2.internetGateway();
+      const rt = await igw.travel.to.one.routeTable();
+      const sn = await rt.travel.to.one.subnet();
+      expect(sn.SubnetId).to.be.equal('subnet-e83ee289');
+    });
+
+    it('`travel` should travel from route tables to subnets', async () => {
       const igw = await monkey.select.all.ec2.internetGateways();
       const rt = await igw.travel.to.all.routeTables();
       expect(rt).to.be.an('array').with.a.lengthOf(1);

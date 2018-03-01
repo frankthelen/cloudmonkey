@@ -128,5 +128,5 @@ sn.dump();
 
 The general format is this:
 ```
-data.travel.to.<quantifier>.<resourceType>(<filter>)
+travel.to.<quantifier>.<resourceType>(<filter>)
 ```

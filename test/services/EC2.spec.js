@@ -3,12 +3,18 @@ const assert = require('assert');
 const AWS = require('@mapbox/mock-aws-sdk-js');
 const { CloudMonkey, EC2 } = require('../..');
 const mockDescribeInternetGateways = require('../mocks/internetGateways');
+const mockDescribeRouteTables = require('../mocks/routeTables');
 
 describe('EC2', () => {
   before(() => {
     AWS.stub('EC2', 'describeInternetGateways').returns({
       promise: () => {
         return Promise.resolve(mockDescribeInternetGateways);
+      },
+    });
+    AWS.stub('EC2', 'describeRouteTables').returns({
+      promise: () => {
+        return Promise.resolve(mockDescribeRouteTables);
       },
     });
   });
@@ -61,6 +67,21 @@ describe('EC2', () => {
       await monkey.select.some.ec2.internetGateways({ bla: 'bla' })
         .should.be.rejected;
     });
+
+    it('`all.ec2.routeTables` should return all route tables', async () => {
+      const data = await monkey.select.all.ec2.routeTables();
+      expect(data).to.be.an('array').with.a.lengthOf(2);
+    });
+
+    it('`some.ec2.routeTables` should return route tables / filter by id', async () => {
+      const data = await monkey.select.some.ec2.routeTables({ id: 'rtb-e83ee289' });
+      expect(data).to.be.an('array').with.a.lengthOf(1);
+    });
+
+    it('`one.ec2.routeTables` should return a route table / filter by id', async () => {
+      const data = await monkey.select.one.ec2.routeTable({ id: 'rtb-e83ee289' });
+      expect(data.RouteTableId).to.be.equal('rtb-e83ee289');
+    });
   });
 
   describe('data interface', () => {
@@ -100,6 +121,18 @@ describe('EC2', () => {
       data.dump = 'blablub';
       expect(data.dump).to.be.a('string');
       expect(data.cloudMonkey.dump).to.be.a('function');
+    });
+
+    it('`travel` should travel from one internet gateway to all route tables', async () => {
+      const igw = await monkey.select.one.ec2.internetGateway();
+      const rt = await igw.travel.to.all.routeTables();
+      expect(rt).to.be.an('array').with.a.lengthOf(1);
+    });
+
+    it('`travel` should travel from internet gateways to all route tables', async () => {
+      const igw = await monkey.select.all.ec2.internetGateways();
+      const rt = await igw.travel.to.all.routeTables();
+      expect(rt).to.be.an('array').with.a.lengthOf(1);
     });
   });
 });

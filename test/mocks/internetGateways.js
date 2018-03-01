@@ -7,7 +7,7 @@ module.exports = {
     InternetGatewayId: 'igw-78ef65f2',
     Tags: [{
       Key: 'Name',
-      Value: 'dev_bla_igw'
+      Value: 'test_igw'
     },
     {
       Key: 'Environment',

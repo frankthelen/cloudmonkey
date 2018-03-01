@@ -115,7 +115,7 @@ describe('S3', () => {
       expect(data.travel).to.not.be.undefined;
     });
 
-    it('own property should have higher priority', async () => {
+    it('own property should have higher priority / one', async () => {
       const data = await monkey.select.one.s3.bucket({ name: 'test-badges' });
       data.dump = 'blablub';
       let value;
@@ -123,7 +123,7 @@ describe('S3', () => {
       expect(value).to.be.equal('blablub');
     });
 
-    it('own property should have higher priority', async () => {
+    it('own property should have higher priority / all', async () => {
       const data = await monkey.select.all.s3.buckets();
       data.dump = 'blablub';
       expect(data.dump).to.be.a('string');

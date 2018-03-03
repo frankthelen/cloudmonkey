@@ -3,8 +3,6 @@ const util = require('util');
 const Promise = require('bluebird');
 const select = require('./select');
 const decorate = require('./decorate');
-const S3 = require('./services/S3');
-const EC2 = require('./services/EC2');
 const Service = require('./Service');
 const { version } = require('../package.json');
 
@@ -71,7 +69,7 @@ class CloudMonkey {
       if (list.length === 1) {
         return decorate({ data: list[0], service, resourceType, monkey: this });
       }
-      throw new Error('one resource expected but multiple found');
+      throw new Error('one resource expected but more than one found');
     }
     return decorate({
       data: list.map(item => decorate({ data: item, service, resourceType, monkey: this })),
@@ -87,4 +85,4 @@ class CloudMonkey {
   }
 }
 
-module.exports = { CloudMonkey, S3, EC2 };
+module.exports = CloudMonkey;

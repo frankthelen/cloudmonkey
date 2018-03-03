@@ -19,6 +19,19 @@ class EC2 extends Service {
         vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.InstanceId,
+      travel: {
+        subnet: async (instances) => {
+          const snIds = instances.map(instance => instance.SubnetId);
+          const sns = await this.loadResources('subnet');
+          return sns.filter(sn => snIds.includes(sn.SubnetId));
+        },
+        securityGroup: async (instances) => {
+          const sgIds = instances.reduce((acc, instance) =>
+            [...acc, ...instance.SecurityGroups.map(sg => sg.GroupId)], []);
+          const sgs = await this.loadResources('securityGroup');
+          return sgs.filter(sg => sgIds.includes(sg.GroupId));
+        },
+      },
     });
     this.register({
       name: 'internetGateway',
@@ -72,6 +85,13 @@ class EC2 extends Service {
         vpc: (item, value) => item.VpcId === value,
       },
       identity: item => item.SubnetId,
+      travel: {
+        instance: async (sns) => {
+          const snIds = sns.map(sn => sn.SubnetId);
+          const instances = await this.loadResources('instance');
+          return instances.filter(instance => snIds.includes(instance.SubnetId));
+        }
+      },
     });
   }
 

@@ -92,7 +92,8 @@ service "ec2"
 
 ### Selecting resources
 
-The selection interface provides a means to select resources in your infrastructure. For example:
+The selection interface provides a means to select resources in your infrastructure.
+For example:
 ```javascript
 const monkey = new CloudMonkey();
 monkey.register(new EC2({ region: 'eu-central-1' }));
@@ -143,3 +144,42 @@ The travel interface has the following format:
 ```
 travel.to.<quantifier>.<resourceType>(<filter>)
 ```
+
+### Extending CloudMonkey with new services
+
+CloudMonkey per se is cloud-agnostic.
+It only knows services (which strictly speaking don't even have to be cloud services) and their resource types.
+To add new services to CloudMonkey, simply derive from `Service`.
+A quick example:
+
+```javascript
+const { CloudMonkey, Service } = require('cloudmonkey');
+
+class FooService extends Service {
+  constructor({ alias } = {}) {
+    super({ name: 'foo', alias });
+    // register resource type 'bar'
+    this.register({
+      name: 'bar',
+      list: async () => Promise.resolve([]), // array of `bar` resources
+      filters: {
+        id: (bar, value) => bar.id === value,
+      },
+      identity: bar => bar.id,
+      travel: {
+        baz: async (bars) => Promise.resolve([]), // array of `baz` resources
+      }
+    });
+    // register resource type 'baz'
+    // ...
+  }
+}
+
+const monkey = new CloudMonkey();
+monkey.register(new FooService());
+
+const bar = await monkey.select.one.foo.bar({ id: '1234' });
+const bazs = await bar.travel.to.all.bazs();
+```
+
+CloudMonkey doesn't do any caching, i.e., if caching makes sense, the service has to take care itself.

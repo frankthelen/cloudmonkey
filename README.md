@@ -1,6 +1,6 @@
 # CloudMonkey
 
-Small infrastructure testing framework -- **EXPERIMENTAL** -- use at your own risk!
+Small infrastructure testing framework -- **EXPERIMENTAL**
 
 The idea is to fill the gap between
 unit testing of infrastructure scripts (Terraform, CloudFormation, etc.) on the one hand,
@@ -15,7 +15,7 @@ Services and resource types are extendable and pluggable.
 [![Coverage Status](https://coveralls.io/repos/github/frankthelen/cloudmonkey/badge.svg?branch=master)](https://coveralls.io/github/frankthelen/cloudmonkey?branch=master)
 [![Dependency Status](https://gemnasium.com/badges/github.com/frankthelen/cloudmonkey.svg)](https://gemnasium.com/github.com/frankthelen/cloudmonkey)
 [![Greenkeeper badge](https://badges.greenkeeper.io/frankthelen/cloudmonkey.svg)](https://greenkeeper.io/)
-[![Maintainability](https://api.codeclimate.com/v1/badges/2b21f79b2657870c146f/maintainability)](https://codeclimate.com/github/frankthelen/cloudmonkey/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/520457acb01e31acc0a3/maintainability)](https://codeclimate.com/github/frankthelen/cloudmonkey/maintainability)
 [![node](https://img.shields.io/node/v/cloudmonkey.svg)]()
 [![code style](https://img.shields.io/badge/code_style-airbnb-brightgreen.svg)](https://github.com/airbnb/javascript)
 [![License Status](http://img.shields.io/npm/l/cloudmonkey.svg)]()

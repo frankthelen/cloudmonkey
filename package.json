@@ -1,6 +1,6 @@
 {
   "name": "cloudmonkey",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Small infrastructure testing framework -- EXPERIMENTAL",
   "main": "src/index.js",
   "repository": {

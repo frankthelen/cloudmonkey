@@ -13,7 +13,7 @@ Services and resource types are extendable and pluggable.
 
 [![Build Status](https://travis-ci.org/frankthelen/cloudmonkey.svg?branch=master)](https://travis-ci.org/frankthelen/cloudmonkey)
 [![Coverage Status](https://coveralls.io/repos/github/frankthelen/cloudmonkey/badge.svg?branch=master)](https://coveralls.io/github/frankthelen/cloudmonkey?branch=master)
-[![Dependency Status](https://gemnasium.com/badges/github.com/frankthelen/cloudmonkey.svg)](https://gemnasium.com/github.com/frankthelen/cloudmonkey)
+[![dependencies Status](https://david-dm.org/frankthelen/cloudmonkey/status.svg)](https://david-dm.org/frankthelen/cloudmonkey)
 [![Greenkeeper badge](https://badges.greenkeeper.io/frankthelen/cloudmonkey.svg)](https://greenkeeper.io/)
 [![Maintainability](https://api.codeclimate.com/v1/badges/520457acb01e31acc0a3/maintainability)](https://codeclimate.com/github/frankthelen/cloudmonkey/maintainability)
 [![node](https://img.shields.io/node/v/cloudmonkey.svg)]()

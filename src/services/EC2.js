@@ -26,8 +26,8 @@ class EC2 extends Service {
           return sns.filter(sn => snIds.includes(sn.SubnetId));
         },
         securityGroup: async (instances) => {
-          const sgIds = instances.reduce((acc, instance) =>
-            [...acc, ...instance.SecurityGroups.map(sg => sg.GroupId)], []);
+          const sgIds = instances // eslint-disable-next-line max-len
+            .reduce((acc, instance) => [...acc, ...instance.SecurityGroups.map(sg => sg.GroupId)], []);
           const sgs = await this.loadResources('securityGroup');
           return sgs.filter(sg => sgIds.includes(sg.GroupId));
         },
@@ -45,8 +45,8 @@ class EC2 extends Service {
         routeTable: async (igws) => {
           const igwIds = igws.map(igw => igw.InternetGatewayId);
           const rts = await this.loadResources('routeTable');
-          return rts.filter(rt =>
-            rt.Routes.filter(route => igwIds.includes(route.GatewayId)).length);
+          return rts.filter(rt => rt.Routes
+            .filter(route => igwIds.includes(route.GatewayId)).length);
         },
       },
     });
@@ -60,8 +60,8 @@ class EC2 extends Service {
       identity: item => item.RouteTableId,
       travel: {
         subnet: async (rts) => {
-          const snIds = rts.reduce((acc, rt) =>
-            [...acc, ...rt.Associations.map(a => a.SubnetId)], []);
+          const snIds = rts
+            .reduce((acc, rt) => [...acc, ...rt.Associations.map(a => a.SubnetId)], []);
           const sns = await this.loadResources('subnet');
           return sns.filter(sn => snIds.includes(sn.SubnetId));
         },

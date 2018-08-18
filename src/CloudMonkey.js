@@ -32,23 +32,21 @@ class CloudMonkey {
   }
 
   selectResource({ service, resourceType, one }) {
-    return async (filters = {}) =>
-      Promise.try(async () => {
-        const listComplete = await resourceType.list();
-        const listFiltered = this.dataFilter({ list: listComplete, resourceType, filters });
-        const listDecorated = this.dataDecorate({ list: listFiltered, one, service, resourceType });
-        return listDecorated;
-      });
+    return async (filters = {}) => Promise.try(async () => {
+      const listComplete = await resourceType.list();
+      const listFiltered = this.dataFilter({ list: listComplete, resourceType, filters });
+      const listDecorated = this.dataDecorate({ list: listFiltered, one, service, resourceType });
+      return listDecorated;
+    });
   }
 
   dataTravel({ data, array, service, resourceType, travelFunction, one }) {
-    return async (filters = {}) =>
-      Promise.try(async () => {
-        const listComplete = await travelFunction(array ? data : [data]);
-        const listFiltered = this.dataFilter({ list: listComplete, resourceType, filters });
-        const listDecorated = this.dataDecorate({ list: listFiltered, one, service, resourceType });
-        return listDecorated;
-      });
+    return async (filters = {}) => Promise.try(async () => {
+      const listComplete = await travelFunction(array ? data : [data]);
+      const listFiltered = this.dataFilter({ list: listComplete, resourceType, filters });
+      const listDecorated = this.dataDecorate({ list: listFiltered, one, service, resourceType });
+      return listDecorated;
+    });
   }
 
   dataFilter({ list, resourceType, filters }) {

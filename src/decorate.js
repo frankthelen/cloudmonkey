@@ -55,13 +55,14 @@ const decorator = ({ monkey, service, resourceType, array }) => ({
     if (prop === monkey.decorator) {
       return dataInterface({ monkey, data: target, service, resourceType, array });
     }
-    if (['dump', 'travel'].includes(prop) &&
-      !Object.prototype.hasOwnProperty.call(target, prop)) {
+    if (['dump', 'travel'].includes(prop)
+      && !Object.prototype.hasOwnProperty.call(target, prop)) {
       return dataInterface({ monkey, data: target, service, resourceType, array })[prop];
     }
     return target[prop];
   },
 });
 
-module.exports = ({ monkey, data, service, resourceType, array }) =>
-  new Proxy(data, decorator({ monkey, service, resourceType, array }));
+module.exports = ({
+  monkey, data, service, resourceType, array,
+}) => new Proxy(data, decorator({ monkey, service, resourceType, array }));

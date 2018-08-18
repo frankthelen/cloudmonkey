@@ -37,5 +37,4 @@ const quantifierInterface = ({ monkey }) => ({
   },
 });
 
-module.exports = ({ monkey }) =>
-  new Proxy({}, quantifierInterface({ monkey }));
+module.exports = ({ monkey }) => new Proxy({}, quantifierInterface({ monkey }));
